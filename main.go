@@ -23,7 +23,7 @@ func notFoundHandler(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, msg, http.StatusNotFound)
 }
 
-func pathHandler(w http.ResponseWriter, r *http.Request) {
+func (router Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	switch r.URL.Path {
 	case "/contact":
@@ -36,6 +36,7 @@ func pathHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	var router Router
 	fmt.Println("Server will listen on port : 4949")
-	http.ListenAndServe(":4949", http.HandlerFunc(pathHandler))
+	http.ListenAndServe(":4949", router)
 }

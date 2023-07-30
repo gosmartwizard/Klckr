@@ -5,6 +5,9 @@ import (
 	"net/http"
 )
 
+type Router struct {
+}
+
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	fmt.Fprint(w, "<h1>Welcome to the world of Klckr</h1>")
@@ -20,7 +23,7 @@ func notFoundHandler(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, msg, http.StatusNotFound)
 }
 
-func pathHandler(w http.ResponseWriter, r *http.Request) {
+func (router Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	switch r.URL.Path {
 	case "/contact":
@@ -33,7 +36,7 @@ func pathHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/", pathHandler)
+	var router Router
 	fmt.Println("Server will listen on port : 4949")
-	http.ListenAndServe(":4949", nil)
+	http.ListenAndServe(":4949", router)
 }

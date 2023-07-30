@@ -3,10 +3,9 @@ package main
 import (
 	"fmt"
 	"net/http"
-)
 
-type Router struct {
-}
+	"github.com/go-chi/chi/v5"
+)
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -44,22 +43,15 @@ func notFoundHandler(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, msg, http.StatusNotFound)
 }
 
-func (router Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-
-	switch r.URL.Path {
-	case "/contact":
-		contactHandler(w, r)
-	case "/":
-		homeHandler(w, r)
-	case "/faq":
-		faqHandler(w, r)
-	default:
-		notFoundHandler(w, r)
-	}
-}
-
 func main() {
-	var router Router
+	r := chi.NewRouter()
+
+	r.Get("/", homeHandler)
+	r.Get("/contact", contactHandler)
+	r.Get("/faq", faqHandler)
+	r.NotFound(notFoundHandler)
+
 	fmt.Println("Server will listen on port : 4949")
-	http.ListenAndServe(":4949", router)
+
+	http.ListenAndServe(":4949", r)
 }

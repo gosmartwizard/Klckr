@@ -16,7 +16,7 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func notFoundHandler(w http.ResponseWriter, r *http.Request) {
-	msg := "Requested path : " + r.URL.Path + " is not valid"
+	msg := "Requested path : " + r.URL.Path + " is not valid and Page not found"
 	http.Error(w, msg, http.StatusNotFound)
 }
 

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -43,15 +44,27 @@ func notFoundHandler(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, msg, http.StatusNotFound)
 }
 
-func main() {
-	r := chi.NewRouter()
+func getParamsHandler(w http.ResponseWriter, r *http.Request) {
+	v := chi.URLParam(r, "userID")
+	msg := fmt.Sprintf("<h1>UserID : %v </h1>", v)
 
-	r.Get("/", homeHandler)
-	r.Get("/contact", contactHandler)
-	r.Get("/faq", faqHandler)
-	r.NotFound(notFoundHandler)
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+
+	fmt.Fprint(w, msg)
+}
+
+func main() {
+	router := chi.NewRouter()
+
+	//router.Use(middleware.Logger)
+	router.Get("/", homeHandler)
+	router.Get("/contact", contactHandler)
+	router.Get("/faq", faqHandler)
+	router.NotFound(notFoundHandler)
+	//router.Get("/users/{userID}", getParamsHandler)
+	router.With(middleware.Logger).Get("/users/{userID}", getParamsHandler)
 
 	fmt.Println("Server will listen on port : 4949")
 
-	http.ListenAndServe(":4949", r)
+	http.ListenAndServe(":4949", router)
 }

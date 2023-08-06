@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
+	"github.com/gosmartwizard/Klckr/controllers"
 	"github.com/gosmartwizard/Klckr/views"
 )
 
@@ -53,7 +53,7 @@ func getParamsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	router := chi.NewRouter()
+	/*router := chi.NewRouter()
 
 	//router.Use(middleware.Logger)
 	router.Get("/", homeHandler)
@@ -65,5 +65,31 @@ func main() {
 
 	fmt.Println("Server will listen on port : 4949")
 
-	http.ListenAndServe(":4949", router)
+	http.ListenAndServe(":4949", router) */
+
+	r := chi.NewRouter()
+
+	tpl, err := views.Parse(filepath.Join("templates", "home.gohtml"))
+	if err != nil {
+		panic(err)
+	}
+	r.Get("/", controllers.StaticHandler(tpl))
+
+	tpl, err = views.Parse(filepath.Join("templates", "contact.gohtml"))
+	if err != nil {
+		panic(err)
+	}
+	r.Get("/contact", controllers.StaticHandler(tpl))
+
+	tpl, err = views.Parse(filepath.Join("templates", "faq.gohtml"))
+	if err != nil {
+		panic(err)
+	}
+	r.Get("/faq", controllers.StaticHandler(tpl))
+
+	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
+		http.Error(w, "Page not found", http.StatusNotFound)
+	})
+	fmt.Println("Starting the server on :4949...")
+	http.ListenAndServe(":4949", r)
 }

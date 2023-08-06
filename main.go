@@ -2,31 +2,25 @@ package main
 
 import (
 	"fmt"
-	"html/template"
 	"log"
 	"net/http"
 	"path/filepath"
 
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
+	"github.com/gosmartwizard/Klckr/views"
 )
 
 func parseExecuteTemplate(w http.ResponseWriter, tplPath string) {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
-	t, err := template.ParseFiles(tplPath)
+	tpl, err := views.Parse(tplPath)
 	if err != nil {
-		log.Printf("Failed to parse template file : %v", err)
+		log.Printf("Parse template failed with error: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	err = t.Execute(w, nil)
-	if err != nil {
-		log.Printf("Failed to execute template : %v", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	tpl.Execute(w, nil)
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
